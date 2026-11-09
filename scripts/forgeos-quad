@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# ForgeOS — abre 4 terminales en mosaico (Mod+T)
+# Uso: forgeos-quad
+set -euo pipefail
+TERM_CMD="${TERMINAL:-alacritty}"
+if ! command -v "$TERM_CMD" >/dev/null 2>&1; then
+  echo "forgeos-quad: terminal '$TERM_CMD' no encontrada (instala alacritty)" >&2
+  exit 1
+fi
+# Si i3-msg no está disponible, solo abre terminales
+if ! command -v i3-msg >/dev/null 2>&1; then
+  "$TERM_CMD" &
+  exit 0
+fi
+i3-msg "workspace number 1; exec $TERM_CMD; split h; exec $TERM_CMD; focus parent; split v; exec $TERM_CMD; focus parent; split v; exec $TERM_CMD" >/dev/null

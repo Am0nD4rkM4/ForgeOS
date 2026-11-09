@@ -1,0 +1,22 @@
+/* ForgeOS — rofi */
+configuration {
+    modi: "drun,run,window";
+    show-icons: true;
+    icon-theme: "Papirus-Dark";
+    font: "JetBrains Mono 11";
+    drun-display-format: "{name}";
+}
+* {
+    background: #0b1220;
+    background-alt: #111c33;
+    foreground: #e2e8f0;
+    selected: #38bdf8;
+    active: #22c55e;
+    urgent: #ef4444;
+}
+window {
+    background-color: @background;
+    border: 2px solid @selected;
+    border-radius: 10px;
+    width: 600px;
+}

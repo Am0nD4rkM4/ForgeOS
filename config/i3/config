@@ -1,0 +1,153 @@
+# ForgeOS — i3 config
+# Debian 12 + i3. Mod = Alt (cámbialo a Mod4/Super si prefieres, ver abajo)
+# Mod = $mod
+set $mod Mod1
+set $term alacritty
+set $menu rofi -show drun
+
+# Fuentes y colores ForgeOS (azul oscuro / cian)
+font pango:JetBrains Mono, monospace 10
+set $bg #0b1220
+set $bg2 #111c33
+set $fg #e2e8f0
+set $muted #94a3b8
+set $accent #38bdf8
+set $green #22c55e
+set $yellow #eab308
+set $red #ef4444
+
+# Bordes y gaps
+default_border pixel 2
+default_floating_border pixel 2
+gaps inner 8
+gaps outer 4
+smart_gaps on
+hide_edge_borders smart
+
+# Colores de ventana
+# class                 borde    fondo    texto    indicador
+client.focused          $accent  $bg2     $fg      $accent
+client.focused_inactive $bg2     $bg2     $muted   $bg2
+client.unfocused        $bg2     $bg      $muted   $bg2
+client.urgent           $red     $red     $fg      $red
+client.placeholder      $bg      $bg      $fg      $bg
+
+# Barra superior
+bar {
+    status_command i3status
+    position top
+    font pango:JetBrains Mono, monospace 10
+    colors {
+        background $bg
+        statusline $fg
+        separator $muted
+        focused_workspace  $accent $accent $bg
+        active_workspace   $bg2    $bg2    $fg
+        inactive_workspace $bg     $bg     $muted
+        urgent_workspace   $red    $red    $fg
+    }
+}
+
+# --- Atajos básicos ---
+# Abrir terminal (esto es lo que pediste: solo terminales, en mosaico)
+bindsym $mod+Return exec $term
+bindsym $mod+Shift+Return exec $term -e tmux
+
+# 4 terminales en mosaico al instante (Super/Alt + T)
+bindsym $mod+t exec forgeos-quad
+
+# Cerrar ventana, recargar, salir
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+Shift+e exec i3-nagbar -t warning -m '¿Salir de i3?' -B 'Sí, salir' 'i3-msg exit'
+
+# Lanzador y utilidades
+bindsym $mod+d exec $menu
+bindsym $mod+Shift+d exec rofi -show run
+bindsym $mod+Control+l exec i3lock -c 0b1220
+bindsym $mod+Shift+s exec flameshot gui
+bindsym Print exec flameshot gui
+
+# InfoForge rápido
+bindsym $mod+i exec $term -e bash -c 'cd ~/InfoForge 2>/dev/null || cd ~/infoforge-linux 2>/dev/null || cd /opt/infoforge; python3 infoforge.py interactive; exec bash'
+bindsym $mod+Shift+i exec $term -e bash -c 'cd ~/InfoForge 2>/dev/null || cd ~/infoforge-linux 2>/dev/null || cd /opt/infoforge; python3 infoforge.py system; exec bash'
+
+# Navegación entre ventanas (vim-style + flechas)
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+# Mover ventanas
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+# Dividir horizontal / vertical, fullscreen, flotante, tiling
+bindsym $mod+v split v
+bindsym $mod+b split h
+bindsym $mod+f fullscreen toggle
+bindsym $mod+Shift+f floating toggle
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+bindsym $mod+space focus mode_toggle
+
+# Espacios de trabajo 1-10
+bindsym $mod+1 workspace number 1
+bindsym $mod+2 workspace number 2
+bindsym $mod+3 workspace number 3
+bindsym $mod+4 workspace number 4
+bindsym $mod+5 workspace number 5
+bindsym $mod+6 workspace number 6
+bindsym $mod+7 workspace number 7
+bindsym $mod+8 workspace number 8
+bindsym $mod+9 workspace number 9
+bindsym $mod+0 workspace number 10
+bindsym $mod+Shift+1 move container to workspace number 1
+bindsym $mod+Shift+2 move container to workspace number 2
+bindsym $mod+Shift+3 move container to workspace number 3
+bindsym $mod+Shift+4 move container to workspace number 4
+bindsym $mod+Shift+5 move container to workspace number 5
+bindsym $mod+Shift+6 move container to workspace number 6
+bindsym $mod+Shift+7 move container to workspace number 7
+bindsym $mod+Shift+8 move container to workspace number 8
+bindsym $mod+Shift+9 move container to workspace number 9
+bindsym $mod+Shift+0 move container to workspace number 10
+
+# Redimensionar con Mod + botón derecho, o Mod+r y luego hjkl
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym h resize shrink width 10 px or 10 ppt
+    bindsym j resize grow height 10 px or 10 ppt
+    bindsym k resize shrink height 10 px or 10 ppt
+    bindsym l resize grow width 10 px or 10 ppt
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+    bindsym $mod+r mode "default"
+}
+
+# Volumen y brillo (si existen las teclas)
+bindsym XF86AudioRaiseVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ +5%
+bindsym XF86AudioLowerVolume exec --no-startup-id pactl set-sink-volume @DEFAULT_SINK@ -5%
+bindsym XF86AudioMute exec --no-startup-id pactl set-sink-mute @DEFAULT_SINK@ toggle
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +5%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
+
+# Arranque
+exec --no-startup-id picom --config ~/.config/picom/picom.conf
+exec --no-startup-id nitrogen --restore 2>/dev/null || true
+exec --no-startup-id nm-applet 2>/dev/null || true
+exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 2>/dev/null || true
+# Mensaje de bienvenida en la primera terminal
+exec --no-startup-id $term -e bash -c 'echo "ForgeOS — Debian 12 + i3 | Mod+Return terminal, Mod+T 4 terminales, Mod+d lanzador"; exec bash'

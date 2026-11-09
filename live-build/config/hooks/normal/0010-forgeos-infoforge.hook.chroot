@@ -1,0 +1,16 @@
+#!/bin/sh
+# ForgeOS — hook live-build: preparar /opt/infoforge (sin clonar el repo privado aquí)
+set -e
+mkdir -p /opt/infoforge
+cat > /opt/infoforge/README.txt <<'EOF'
+ForgeOS — InfoForge
+===================
+InfoForge es un repo privado de GitHub (Am0nD4rkM4/InfoForge).
+Después de instalar ForgeOS, clónalo con tu autenticación:
+
+  git clone https://github.com/Am0nD4rkM4/InfoForge.git ~/InfoForge
+  cd ~/InfoForge && bash install.sh
+
+O usa la copia que ya tengas en tu USB / home.
+EOF
+chmod +x /usr/local/bin/forgeos-quad 2>/dev/null || true

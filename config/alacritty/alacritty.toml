@@ -1,0 +1,40 @@
+# ForgeOS — Alacritty
+[window]
+padding = { x = 8, y = 8 }
+opacity = 0.95
+
+[font]
+normal = { family = "JetBrains Mono", style = "Regular" }
+bold = { family = "JetBrains Mono", style = "Bold" }
+size = 11.0
+
+[colors.primary]
+background = "#0b1220"
+foreground = "#e2e8f0"
+
+[colors.normal]
+black = "#0f172a"
+red = "#ef4444"
+green = "#22c55e"
+yellow = "#eab308"
+blue = "#38bdf8"
+magenta = "#a78bfa"
+cyan = "#22d3ee"
+white = "#e2e8f0"
+
+[colors.bright]
+black = "#475569"
+red = "#f87171"
+green = "#4ade80"
+yellow = "#facc15"
+blue = "#7dd3fc"
+magenta = "#c4b5fd"
+cyan = "#67e8f9"
+white = "#f8fafc"
+
+[scrolling]
+history = 10000
+multiplier = 3
+
+[selection]
+save_to_clipboard = true

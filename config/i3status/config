@@ -1,0 +1,43 @@
+# ForgeOS — i3status
+general {
+    colors = true
+    interval = 5
+    color_good = "#22c55e"
+    color_degraded = "#eab308"
+    color_bad = "#ef4444"
+}
+order += "wireless _first_"
+order += "ethernet _first_"
+order += "battery all"
+order += "cpu_usage"
+order += "memory"
+order += "disk /"
+order += "load"
+order += "time"
+wireless _first_ {
+    format_up = " %essid %ip"
+    format_down = " off"
+}
+ethernet _first_ {
+    format_up = " %ip"
+    format_down = " off"
+}
+battery all {
+    format = "%status %percentage %remaining"
+}
+cpu_usage {
+    format = "CPU %usage"
+}
+memory {
+    format = "RAM %used / %available"
+    threshold_degraded = "1G"
+}
+disk "/" {
+    format = " %avail"
+}
+load {
+    format = "Carga %1min"
+}
+time {
+    format = "%Y-%m-%d %H:%M"
+}
