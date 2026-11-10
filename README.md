@@ -162,6 +162,10 @@ bash -n install.sh build-iso.sh live-build/auto/config
 - **Dos pantallas:** si hay un monitor externo conectado al entrar, el espacio 1 con el monitor a pantalla completa va a la pantalla de la derecha (`forgeos-pantallas`).
 - Se añadió `x11-xserver-utils` (para `xrandr`, que detecta la segunda pantalla).
 
+## Corrección 2026-11-09 (instalación)
+
+- `install.sh` instalaba `pulseaudio` **y** `pipewire-audio` a la vez, y en Debian 13 esos dos paquetes entran en conflicto: apt abortaba el paso 2/6 con "usted ha retenido paquetes rotos". Ahora solo se instala `pipewire-audio`, que en Trixie ya trae `pipewire-pulse` (compatibilidad con PulseAudio), `pipewire-alsa`, `wireplumber` y Bluetooth, así que `pavucontrol` y los atajos de volumen siguen funcionando igual. Lo mismo se corrigió en la lista de paquetes de la ISO (`live-build/config/package-lists/forgeos.list.chroot`).
+
 ## Cambios de la v2.0 respecto a la v1.2
 
 - Base **Debian 13 Trixie** en vez de Debian 12 Bookworm (live-build `trixie`, instalador actualizado).

@@ -41,7 +41,7 @@ run apt-get install -y -qq \
   alacritty tmux neovim htop btop fastfetch curl wget git unzip zip \
   fonts-jetbrains-mono fonts-firacode x11-xserver-utils \
   network-manager network-manager-gnome blueman pavucontrol \
-  pulseaudio pipewire-audio brightnessctl flameshot \
+  pipewire-audio brightnessctl flameshot \
   firefox-esr thunar thunar-archive-plugin file-roller \
   lxqt-policykit
 
