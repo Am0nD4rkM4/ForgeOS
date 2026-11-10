@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# ForgeOS — escritorio monitor (Mod+M)
-# Abre en el espacio de trabajo 1 una terminal dividida en dos:
-# arriba btop (el administrador de tareas: CPU, RAM, disco, red, procesos)
-# y abajo forgeos-sysinfo (usuario, equipo, uptime, RAM, disco, IP).
-# Si el monitor ya está abierto, solo vuelve a él.
+# ForgeOS — monitor fijo en la esquina superior derecha
+# Abre una terminal con btop (arriba) y forgeos-sysinfo (abajo: usuario,
+# equipo, uptime, RAM, disco, IP) y la deja flotando y fija (sticky) en la
+# esquina superior derecha, visible en todos los espacios de trabajo.
+# Mod+M la esconde y la vuelve a mostrar; Mod+Shift+M la reabre si se cerró.
 # Uso: forgeos-monitor
 set -euo pipefail
 TERM_CMD="${TERMINAL:-alacritty}"
@@ -26,7 +26,21 @@ if ! tmux has-session -t forgeos-monitor 2>/dev/null; then
   tmux select-pane -t forgeos-monitor:0.0
 fi
 if command -v i3-msg >/dev/null 2>&1; then
-  i3-msg "workspace number 1; exec $TERM_CMD -e tmux attach-session -t forgeos-monitor" >/dev/null
+  # Si la ventana ya existe, solo mostrarla; si no, abrirla y guardarla
+  # en el scratchpad para que Mod+M la esconda y la muestre.
+  if i3-msg -t get_tree 2>/dev/null | grep -q '"name": "ForgeOS Monitor"'; then
+    i3-msg '[title="^ForgeOS Monitor$"] scratchpad show' >/dev/null
+    exit 0
+  fi
+  i3-msg "exec $TERM_CMD -T 'ForgeOS Monitor' -e tmux attach-session -t forgeos-monitor" >/dev/null
+  for _ in $(seq 1 20); do
+    if i3-msg -t get_tree 2>/dev/null | grep -q '"name": "ForgeOS Monitor"'; then
+      break
+    fi
+    sleep 0.25
+  done
+  i3-msg '[title="^ForgeOS Monitor$"] move scratchpad' >/dev/null
+  i3-msg '[title="^ForgeOS Monitor$"] scratchpad show' >/dev/null
 else
-  "$TERM_CMD" -e tmux attach-session -t forgeos-monitor &
+  "$TERM_CMD" -T 'ForgeOS Monitor' -e tmux attach-session -t forgeos-monitor &
 fi

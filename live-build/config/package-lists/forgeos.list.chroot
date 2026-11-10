@@ -15,6 +15,7 @@ neovim
 htop
 btop
 fastfetch
+x11-xserver-utils
 curl
 wget
 git

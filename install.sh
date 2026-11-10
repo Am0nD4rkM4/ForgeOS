@@ -39,7 +39,7 @@ log "2/6 Instalando Xorg, i3 y utilidades..."
 run apt-get install -y -qq \
   xorg xinit lightdm i3 i3status i3lock dmenu rofi picom nitrogen \
   alacritty tmux neovim htop btop fastfetch curl wget git unzip zip \
-  fonts-jetbrains-mono fonts-firacode \
+  fonts-jetbrains-mono fonts-firacode x11-xserver-utils \
   network-manager network-manager-gnome blueman pavucontrol \
   pulseaudio pipewire-audio brightnessctl flameshot \
   firefox-esr thunar thunar-archive-plugin file-roller \
@@ -67,6 +67,8 @@ if [[ -n "$USER_HOME" && -d "$USER_HOME" ]]; then
   run chmod +x /usr/local/bin/forgeos-quad
   run cp "$SCRIPT_DIR/scripts/forgeos-monitor" /usr/local/bin/forgeos-monitor
   run chmod +x /usr/local/bin/forgeos-monitor
+  run cp "$SCRIPT_DIR/scripts/forgeos-pantallas" /usr/local/bin/forgeos-pantallas
+  run chmod +x /usr/local/bin/forgeos-pantallas
   run cp "$SCRIPT_DIR/scripts/forgeos-sysinfo" /usr/local/bin/forgeos-sysinfo
   run chmod +x /usr/local/bin/forgeos-sysinfo
   run chown -R "$USER_NAME:$USER_NAME" "$USER_HOME/.config" 2>/dev/null || true
@@ -103,5 +105,5 @@ log "6/6 LightDM como gestor de inicio..."
 run systemctl enable lightdm 2>/dev/null || true
 
 log "Listo. Reinicia y elige i3 en LightDM."
-echo "Atajos: Mod(Alt)+Return terminal · Mod+T 4 terminales · Mod+M monitor (btop) · Mod+d lanzador · Mod+i InfoForge"
+echo "Atajos: Mod(Alt)+Return terminal · Mod+T 4 terminales · Mod+M monitor en esquina (esconde/muestra) · Mod+d lanzador · Mod+i InfoForge"
 echo "Si vienes de GNOME/KDE, esto es mucho más ligero: solo terminales en mosaico."

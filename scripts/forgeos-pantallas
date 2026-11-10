@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+# ForgeOS — dos pantallas (laptop + monitor externo)
+# Si hay una segunda pantalla conectada al entrar a i3, abre el monitor
+# a pantalla completa en el espacio 1 y manda ese espacio a la pantalla
+# de la derecha, para trabajar en la laptop y ver los datos en la otra.
+# Con una sola pantalla no hace nada: el monitor queda fijo en la esquina
+# superior derecha (Mod+M lo esconde y lo muestra).
+# Uso: forgeos-pantallas (se ejecuta solo al arrancar i3)
+set -euo pipefail
+command -v xrandr >/dev/null 2>&1 || exit 0
+command -v i3-msg >/dev/null 2>&1 || exit 0
+command -v tmux >/dev/null 2>&1 || exit 0
+mapfile -t SALIDAS < <(xrandr --query | awk '$2 == "connected" {print $1}')
+if [[ "${#SALIDAS[@]}" -lt 2 ]]; then
+  exit 0
+fi
+SYSINFO="/usr/local/bin/forgeos-sysinfo"
+if ! tmux has-session -t forgeos-monitor-2 2>/dev/null; then
+  tmux new-session -d -s forgeos-monitor-2 'btop'
+  if [[ -x "$SYSINFO" ]]; then
+    tmux split-window -v -p 30 -t forgeos-monitor-2 "bash $SYSINFO"
+  fi
+  tmux select-pane -t forgeos-monitor-2:0.0
+fi
+i3-msg "workspace number 1" >/dev/null
+i3-msg "exec alacritty -T 'ForgeOS Monitor 2' -e tmux attach-session -t forgeos-monitor-2" >/dev/null
+sleep 1
+i3-msg "workspace number 1; move workspace to output right" >/dev/null
+i3-msg "workspace number 2" >/dev/null

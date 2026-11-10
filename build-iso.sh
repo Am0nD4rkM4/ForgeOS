@@ -23,7 +23,7 @@ if $DRY_RUN; then
   echo "[dry-run] copiaría live-build/ + config/ a /tmp/forgeos-build y ejecutaría lb clean/config/build"
   for f in live-build/auto/config live-build/config/package-lists/forgeos.list.chroot \
            config/i3/config config/alacritty/alacritty.toml scripts/forgeos-quad \
-           scripts/forgeos-monitor scripts/forgeos-sysinfo; do
+           scripts/forgeos-monitor scripts/forgeos-pantallas scripts/forgeos-sysinfo; do
     [[ -f "$f" ]] || { echo "Falta $f"; exit 1; }
     echo "[dry-run] OK $f"
   done
@@ -53,6 +53,8 @@ cp scripts/forgeos-quad /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
 chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-quad
 cp scripts/forgeos-monitor /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
 chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-monitor
+cp scripts/forgeos-pantallas /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
+chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-pantallas
 cp scripts/forgeos-sysinfo /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
 chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-sysinfo
 

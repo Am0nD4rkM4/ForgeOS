@@ -11,7 +11,8 @@ REQUIRED = [
     "config/i3/config", "config/i3status/config",
     "config/alacritty/alacritty.toml", "config/rofi/config.rasi",
     "config/picom/picom.conf", "scripts/forgeos-quad",
-    "scripts/forgeos-monitor", "scripts/forgeos-sysinfo",
+    "scripts/forgeos-monitor", "scripts/forgeos-pantallas",
+    "scripts/forgeos-sysinfo",
     "live-build/auto/config",
     "live-build/config/package-lists/forgeos.list.chroot",
 ]
@@ -35,7 +36,7 @@ def test_scripts_bash_validos():
     for sh in ["install.sh", "build-iso.sh", "live-build/auto/config",
                "live-build/config/hooks/normal/0010-forgeos-infoforge.hook.chroot",
                "scripts/forgeos-quad", "scripts/forgeos-monitor",
-               "scripts/forgeos-sysinfo"]:
+               "scripts/forgeos-pantallas", "scripts/forgeos-sysinfo"]:
         r = subprocess.run(["bash", "-n", str(ROOT / sh)], capture_output=True, text=True)
         assert r.returncode == 0, f"{sh}: {r.stderr}"
     # forgeos-quad ejecutable
@@ -55,22 +56,42 @@ def test_version_debian13():
         assert "Debian 12" not in txt, f"{f}: quedó Debian 12"
     assert "trixie" in (ROOT / "live-build/auto/config").read_text()
     assert "Debian 13" in (ROOT / "README.md").read_text()
-    assert "ForgeOS v2.0" in (ROOT / "README.md").read_text()
+    assert "ForgeOS v2.1" in (ROOT / "README.md").read_text()
 
 
 def test_monitor_escritorio():
-    """El monitor: btop + datos del sistema, con atajo Mod+M y arranque."""
+    """El monitor: ventana fija en la esquina superior derecha (Mod+M la
+    esconde/muestra), con btop + datos del sistema."""
     mon = (ROOT / "scripts/forgeos-monitor").read_text()
     assert "btop" in mon and "tmux" in mon and "forgeos-sysinfo" in mon
-    assert "workspace number 1" in mon
+    assert "move scratchpad" in mon and "scratchpad show" in mon
+    assert "ForgeOS Monitor" in mon
     sysinfo = (ROOT / "scripts/forgeos-sysinfo").read_text()
     for needed in ["whoami", "fastfetch", "df -h", "free -h"]:
         assert needed in sysinfo, f"sysinfo: falta {needed}"
     cfg = (ROOT / "config/i3/config").read_text()
-    for needed in ["bindsym $mod+m", "forgeos-monitor",
+    for needed in ["for_window [title=\"^ForgeOS Monitor$\"]",
+                   "floating enable", "sticky enable",
+                   "resize set width 34 ppt height 48 ppt",
+                   "move position 66 ppt 0 ppt",
+                   "bindsym $mod+m scratchpad show",
+                   "bindsym $mod+Shift+m exec --no-startup-id forgeos-monitor",
+                   "forgeos-pantallas",
                    "lxqt-policykit-agent"]:
         assert needed in cfg, f"i3: falta {needed}"
     assert "policykit-1-gnome" not in cfg
+
+
+def test_doble_pantalla():
+    """Con 2 pantallas, el espacio 1 con el monitor va a la de la derecha."""
+    pant = (ROOT / "scripts/forgeos-pantallas").read_text()
+    for needed in ["xrandr", "connected", "forgeos-monitor-2",
+                   "move workspace to output right", "workspace number 1"]:
+        assert needed in pant, f"pantallas: falta {needed}"
+    install = (ROOT / "install.sh").read_text()
+    assert "x11-xserver-utils" in install
+    pkgs = (ROOT / "live-build/config/package-lists/forgeos.list.chroot").read_text()
+    assert "x11-xserver-utils" in pkgs
 
 
 def test_quad_en_espacio_2():
