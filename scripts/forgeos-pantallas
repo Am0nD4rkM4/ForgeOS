@@ -10,7 +10,12 @@ set -euo pipefail
 command -v xrandr >/dev/null 2>&1 || exit 0
 command -v i3-msg >/dev/null 2>&1 || exit 0
 command -v tmux >/dev/null 2>&1 || exit 0
-mapfile -t SALIDAS < <(xrandr --query | awk '$2 == "connected" {print $1}')
+# Solo cuentan las salidas con un modo ACTIVO (resolución + posición,
+# p. ej. "1920x1080+0+0"): una salida "connected" sin modo activo es un
+# puerto sin nada conectado y NO es una segunda pantalla. Contar también
+# esas hacía que el monitor 2 se abriera a pantalla completa con una
+# sola pantalla (bug 2026-11-09).
+mapfile -t SALIDAS < <(xrandr --query | awk '$2 == "connected" && $0 ~ /[0-9]+x[0-9]+[+]/ {print $1}')
 if [[ "${#SALIDAS[@]}" -lt 2 ]]; then
   exit 0
 fi
@@ -23,7 +28,7 @@ if ! tmux has-session -t forgeos-monitor-2 2>/dev/null; then
   tmux select-pane -t forgeos-monitor-2:0.0
 fi
 i3-msg "workspace number 1" >/dev/null
-i3-msg "exec alacritty -T 'ForgeOS Monitor 2' -e tmux attach-session -t forgeos-monitor-2" >/dev/null
+i3-msg "exec alacritty --class ForgeOS-Monitor2 -T 'ForgeOS Monitor 2' -e tmux attach-session -t forgeos-monitor-2" >/dev/null
 sleep 1
 i3-msg "workspace number 1; move workspace to output right" >/dev/null
 i3-msg "workspace number 2" >/dev/null

@@ -4,6 +4,10 @@
 # equipo, uptime, RAM, disco, IP) y la deja flotando y fija (sticky) en la
 # esquina superior derecha, visible en todos los espacios de trabajo.
 # Mod+M la esconde y la vuelve a mostrar; Mod+Shift+M la reabre si se cerró.
+# La ventana se identifica por su clase (instance ForgeOS-Monitor, con
+# --class), no por el título: el título cambia cuando arranca btop y la
+# regla de i3 por título no la atrapaba, así que el monitor se abría
+# a pantalla completa en mosaico en vez de flotar en la esquina.
 # Uso: forgeos-monitor
 set -euo pipefail
 TERM_CMD="${TERMINAL:-alacritty}"
@@ -28,19 +32,19 @@ fi
 if command -v i3-msg >/dev/null 2>&1; then
   # Si la ventana ya existe, solo mostrarla; si no, abrirla y guardarla
   # en el scratchpad para que Mod+M la esconda y la muestre.
-  if i3-msg -t get_tree 2>/dev/null | grep -q '"name": "ForgeOS Monitor"'; then
-    i3-msg '[title="^ForgeOS Monitor$"] scratchpad show' >/dev/null
+  if i3-msg -t get_tree 2>/dev/null | grep -q '"instance": "ForgeOS-Monitor"'; then
+    i3-msg '[instance="ForgeOS-Monitor"] scratchpad show' >/dev/null
     exit 0
   fi
-  i3-msg "exec $TERM_CMD -T 'ForgeOS Monitor' -e tmux attach-session -t forgeos-monitor" >/dev/null
+  i3-msg "exec $TERM_CMD --class ForgeOS-Monitor -T 'ForgeOS Monitor' -e tmux attach-session -t forgeos-monitor" >/dev/null
   for _ in $(seq 1 20); do
-    if i3-msg -t get_tree 2>/dev/null | grep -q '"name": "ForgeOS Monitor"'; then
+    if i3-msg -t get_tree 2>/dev/null | grep -q '"instance": "ForgeOS-Monitor"'; then
       break
     fi
     sleep 0.25
   done
-  i3-msg '[title="^ForgeOS Monitor$"] move scratchpad' >/dev/null
-  i3-msg '[title="^ForgeOS Monitor$"] scratchpad show' >/dev/null
+  i3-msg '[instance="ForgeOS-Monitor"] move scratchpad' >/dev/null
+  i3-msg '[instance="ForgeOS-Monitor"] scratchpad show' >/dev/null
 else
-  "$TERM_CMD" -T 'ForgeOS Monitor' -e tmux attach-session -t forgeos-monitor &
+  "$TERM_CMD" --class ForgeOS-Monitor -T 'ForgeOS Monitor' -e tmux attach-session -t forgeos-monitor &
 fi

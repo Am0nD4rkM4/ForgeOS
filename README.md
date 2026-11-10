@@ -166,6 +166,12 @@ bash -n install.sh build-iso.sh live-build/auto/config
 
 - `install.sh` instalaba `pulseaudio` **y** `pipewire-audio` a la vez, y en Debian 13 esos dos paquetes entran en conflicto: apt abortaba el paso 2/6 con "usted ha retenido paquetes rotos". Ahora solo se instala `pipewire-audio`, que en Trixie ya trae `pipewire-pulse` (compatibilidad con PulseAudio), `pipewire-alsa`, `wireplumber` y Bluetooth, así que `pavucontrol` y los atajos de volumen siguen funcionando igual. Lo mismo se corrigió en la lista de paquetes de la ISO (`live-build/config/package-lists/forgeos.list.chroot`).
 
+## Corrección 2026-11-09 (monitor a pantalla completa)
+
+- En la primera entrada a i3, el monitor se abría **a pantalla completa en mosaico** en vez de flotar fijo en la esquina superior derecha. Dos causas:
+  1. `forgeos-pantallas` contaba como "segunda pantalla" cualquier salida `connected` de `xrandr`, aunque no tuviera ningún modo activo (un puerto HDMI sin nada conectado). Eso abría el "ForgeOS Monitor 2" a pantalla completa con una sola pantalla. Ahora solo cuentan las salidas con un modo activo (resolución + posición, p. ej. `1920x1080+0+0`).
+  2. El monitor principal se identificaba por su título (`ForgeOS Monitor`), pero el título cambia cuando arranca btop y la regla de i3 no lo atrapaba. Ahora se identifica por su clase de ventana (`--class ForgeOS-Monitor`, `instance` en i3), que no cambia nunca.
+
 ## Cambios de la v2.0 respecto a la v1.2
 
 - Base **Debian 13 Trixie** en vez de Debian 12 Bookworm (live-build `trixie`, instalador actualizado).

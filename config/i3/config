@@ -61,7 +61,9 @@ bindsym $mod+t exec forgeos-quad
 # Escritorio monitor: btop + datos del sistema (usuario, RAM, disco, IP)
 # Ventana fija en la esquina superior derecha, visible en todos los espacios.
 # Mod+M la esconde y la muestra; Mod+Shift+M la reabre si se cerró.
-for_window [title="^ForgeOS Monitor$"] floating enable, sticky enable, border pixel 1, resize set width 34 ppt height 48 ppt, move position 66 ppt 0 ppt
+# Se identifica por su clase de ventana (instance), no por el título:
+# el título cambia cuando arranca btop y la regla por título fallaba.
+for_window [instance="ForgeOS-Monitor"] floating enable, sticky enable, border pixel 1, resize set width 34 ppt height 48 ppt, move position 66 ppt 0 ppt
 bindsym $mod+m scratchpad show
 bindsym $mod+Shift+m exec --no-startup-id forgeos-monitor
 

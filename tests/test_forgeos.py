@@ -61,16 +61,22 @@ def test_version_debian13():
 
 def test_monitor_escritorio():
     """El monitor: ventana fija en la esquina superior derecha (Mod+M la
-    esconde/muestra), con btop + datos del sistema."""
+    esconde/muestra), con btop + datos del sistema.
+    Se identifica por clase de ventana (instance), no por título: el
+    título cambia cuando arranca btop y la regla por título fallaba."""
     mon = (ROOT / "scripts/forgeos-monitor").read_text()
     assert "btop" in mon and "tmux" in mon and "forgeos-sysinfo" in mon
     assert "move scratchpad" in mon and "scratchpad show" in mon
     assert "ForgeOS Monitor" in mon
+    assert "--class ForgeOS-Monitor" in mon
+    assert '"instance": "ForgeOS-Monitor"' in mon
+    assert '[instance="ForgeOS-Monitor"]' in mon
+    assert '[title="^ForgeOS Monitor$"]' not in mon
     sysinfo = (ROOT / "scripts/forgeos-sysinfo").read_text()
     for needed in ["whoami", "fastfetch", "df -h", "free -h"]:
         assert needed in sysinfo, f"sysinfo: falta {needed}"
     cfg = (ROOT / "config/i3/config").read_text()
-    for needed in ["for_window [title=\"^ForgeOS Monitor$\"]",
+    for needed in ["for_window [instance=\"ForgeOS-Monitor\"]",
                    "floating enable", "sticky enable",
                    "resize set width 34 ppt height 48 ppt",
                    "move position 66 ppt 0 ppt",
@@ -80,14 +86,49 @@ def test_monitor_escritorio():
                    "lxqt-policykit-agent"]:
         assert needed in cfg, f"i3: falta {needed}"
     assert "policykit-1-gnome" not in cfg
+    assert 'for_window [title="^ForgeOS Monitor$"]' not in cfg
 
 
 def test_doble_pantalla():
-    """Con 2 pantallas, el espacio 1 con el monitor va a la de la derecha."""
+    """Con 2 pantallas, el espacio 1 con el monitor va a la de la derecha.
+    Solo cuentan las salidas con un modo ACTIVO (resolución + posición);
+    una salida 'connected' sin modo no es una segunda pantalla."""
     pant = (ROOT / "scripts/forgeos-pantallas").read_text()
     for needed in ["xrandr", "connected", "forgeos-monitor-2",
-                   "move workspace to output right", "workspace number 1"]:
+                   "move workspace to output right", "workspace number 1",
+                   "[0-9]+x[0-9]+[+]", "--class ForgeOS-Monitor2"]:
         assert needed in pant, f"pantallas: falta {needed}"
+    # La detección vieja (cualquier 'connected') ya no debe estar.
+    assert """awk '$2 == "connected" {print $1}'""" not in pant
+
+
+def test_pantallas_solo_cuenta_salidas_activas():
+    """Regresión del bug 2026-11-09: con una sola pantalla, xrandr puede
+    reportar un HDMI 'connected' sin modo activo y NO es segunda pantalla.
+    Se corre el awk real del script sobre salidas de xrandr simuladas."""
+    pant = (ROOT / "scripts/forgeos-pantallas").read_text()
+    m = re.search(r"awk '([^']+)'", pant)
+    assert m, "no se encontró el awk de detección en forgeos-pantallas"
+    awk_prog = m.group(1)
+    una = (
+        "eDP-1 connected primary 1920x1080+0+0 (normal left inverted right x axis y axis) 309mm x 173mm\n"
+        "   1920x1080     60.00*+  59.94\n"
+        "HDMI-1 connected (normal left inverted right x axis y axis)\n"
+        "   1920x1080     60.00 +  59.94\n"
+        "   1280x720      60.00\n"
+    )
+    dos = (
+        "eDP-1 connected primary 1920x1080+0+0 (normal left inverted right x axis y axis) 309mm x 173mm\n"
+        "   1920x1080     60.00*+\n"
+        "HDMI-1 connected 1920x1080+1920+0 (normal left inverted right x axis y axis) 527mm x 296mm\n"
+        "   1920x1080     60.00*+\n"
+    )
+    r1 = subprocess.run(["awk", awk_prog], input=una, capture_output=True,
+                        text=True, timeout=10)
+    assert r1.stdout.split() == ["eDP-1"], f"1 pantalla: {r1.stdout!r}"
+    r2 = subprocess.run(["awk", awk_prog], input=dos, capture_output=True,
+                        text=True, timeout=10)
+    assert r2.stdout.split() == ["eDP-1", "HDMI-1"], f"2 pantallas: {r2.stdout!r}"
     install = (ROOT / "install.sh").read_text()
     assert "x11-xserver-utils" in install
     pkgs = (ROOT / "live-build/config/package-lists/forgeos.list.chroot").read_text()
