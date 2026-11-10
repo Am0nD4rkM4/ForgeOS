@@ -1,12 +1,12 @@
 #!/bin/sh
-# ForgeOS — live-build config (Debian 12 Bookworm, amd64)
+# ForgeOS — live-build config (Debian 13 Trixie, amd64)
 set -e
 lb config noauto \
-  --distribution bookworm \
+  --distribution trixie \
   --architecture amd64 \
   --mode debian \
   --image-name forgeos \
-  --iso-volume "ForgeOS 1.0" \
+  --iso-volume "ForgeOS 2.0" \
   --iso-application "ForgeOS" \
   --iso-publisher "Tweeky para Luis" \
   --bootappend-live "boot=live components quiet splash" \

@@ -44,7 +44,7 @@ run apt-get update -qq
 log "2/4 Instalando i3 y ayudantes (sin tocar Xfce/GNOME ni el login)..."
 run apt-get install -y -qq \
   i3 i3status i3lock dmenu rofi picom nitrogen \
-  alacritty tmux htop btop flameshot \
+  alacritty tmux htop btop fastfetch flameshot \
   fonts-jetbrains-mono fonts-firacode \
   brightnessctl pavucontrol
 
@@ -70,6 +70,10 @@ if [[ -d "$USER_HOME" ]]; then
   run cp "$SCRIPT_DIR/config/picom/picom.conf" "$USER_HOME/.config/picom/picom.conf"
   run cp "$SCRIPT_DIR/scripts/forgeos-quad" /usr/local/bin/forgeos-quad
   run chmod +x /usr/local/bin/forgeos-quad
+  run cp "$SCRIPT_DIR/scripts/forgeos-monitor" /usr/local/bin/forgeos-monitor
+  run chmod +x /usr/local/bin/forgeos-monitor
+  run cp "$SCRIPT_DIR/scripts/forgeos-sysinfo" /usr/local/bin/forgeos-sysinfo
+  run chmod +x /usr/local/bin/forgeos-sysinfo
   run chown -R "$USER_NAME:$USER_NAME" "$USER_HOME/.config" 2>/dev/null || true
   if [[ ! -f "$USER_HOME/.tmux.conf" ]]; then
     if $DRY_RUN; then
@@ -114,5 +118,5 @@ fi
 log "Listo."
 echo "Ahora: cierra sesión, en el login elige la sesión 'i3' y entra."
 echo "Primera vez: Mod = Alt, acepta generar la config."
-echo "Atajos: Alt+Return terminal · Alt+T 4 terminales · Alt+D lanzador · Alt+I InfoForge"
+echo "Atajos: Alt+Return terminal · Alt+T 4 terminales · Alt+M monitor (btop) · Alt+D lanzador · Alt+I InfoForge"
 echo "Para volver a Xfce/GNOME: cierra sesión y elige esa sesión en el login."

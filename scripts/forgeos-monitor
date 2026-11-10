@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# ForgeOS — escritorio monitor (Mod+M)
+# Abre en el espacio de trabajo 1 una terminal dividida en dos:
+# arriba btop (el administrador de tareas: CPU, RAM, disco, red, procesos)
+# y abajo forgeos-sysinfo (usuario, equipo, uptime, RAM, disco, IP).
+# Si el monitor ya está abierto, solo vuelve a él.
+# Uso: forgeos-monitor
+set -euo pipefail
+TERM_CMD="${TERMINAL:-alacritty}"
+if ! command -v "$TERM_CMD" >/dev/null 2>&1; then
+  echo "forgeos-monitor: terminal '$TERM_CMD' no encontrada (instala alacritty)" >&2
+  exit 1
+fi
+if ! command -v tmux >/dev/null 2>&1; then
+  echo "forgeos-monitor: tmux no encontrado" >&2
+  exit 1
+fi
+SYSINFO="/usr/local/bin/forgeos-sysinfo"
+if [[ ! -x "$SYSINFO" ]]; then
+  echo "forgeos-monitor: no está $SYSINFO (instala ForgeOS con install.sh)" >&2
+  exit 1
+fi
+if ! tmux has-session -t forgeos-monitor 2>/dev/null; then
+  tmux new-session -d -s forgeos-monitor 'btop'
+  tmux split-window -v -p 30 -t forgeos-monitor "bash $SYSINFO"
+  tmux select-pane -t forgeos-monitor:0.0
+fi
+if command -v i3-msg >/dev/null 2>&1; then
+  i3-msg "workspace number 1; exec $TERM_CMD -e tmux attach-session -t forgeos-monitor" >/dev/null
+else
+  "$TERM_CMD" -e tmux attach-session -t forgeos-monitor &
+fi

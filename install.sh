@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 # ForgeOS — instalador local
-# Transforma un Debian 12 mínimo (netinst sin escritorio) en ForgeOS: Debian + i3.
+# Transforma un Debian 13 mínimo (netinst sin escritorio) en ForgeOS: Debian + i3.
 # Uso:
 #   sudo bash install.sh            # instalación completa
 #   sudo bash install.sh --dry-run  # solo muestra lo que haría, sin instalar
 #   sudo bash install.sh --no-infoforge  # sin clonar InfoForge
 #
-# Requiere: Debian 12 Bookworm, conexión a internet, sudo.
+# Requiere: Debian 13 Trixie, conexión a internet, sudo.
 # NO lo ejecutes en tu sistema principal sin probarlo antes en una VM.
 set -euo pipefail
 
@@ -30,7 +30,7 @@ if [[ $EUID -ne 0 && $DRY_RUN == false ]]; then
   exit 1
 fi
 
-log "ForgeOS — Debian 12 + i3"
+log "ForgeOS — Debian 13 + i3"
 log "1/6 Actualizando apt..."
 run apt-get update -qq
 run apt-get install -y -qq curl git sudo
@@ -38,12 +38,12 @@ run apt-get install -y -qq curl git sudo
 log "2/6 Instalando Xorg, i3 y utilidades..."
 run apt-get install -y -qq \
   xorg xinit lightdm i3 i3status i3lock dmenu rofi picom nitrogen \
-  alacritty tmux neovim htop btop curl wget git unzip zip \
+  alacritty tmux neovim htop btop fastfetch curl wget git unzip zip \
   fonts-jetbrains-mono fonts-firacode \
   network-manager network-manager-gnome blueman pavucontrol \
   pulseaudio pipewire-audio brightnessctl flameshot \
   firefox-esr thunar thunar-archive-plugin file-roller \
-  policykit-1-gnome
+  lxqt-policykit
 
 log "3/6 Herramientas de red / seguridad (opcionales, para InfoForge)..."
 run apt-get install -y -qq \
@@ -65,6 +65,10 @@ if [[ -n "$USER_HOME" && -d "$USER_HOME" ]]; then
   run cp "$SCRIPT_DIR/config/picom/picom.conf" "$USER_HOME/.config/picom/picom.conf"
   run cp "$SCRIPT_DIR/scripts/forgeos-quad" /usr/local/bin/forgeos-quad
   run chmod +x /usr/local/bin/forgeos-quad
+  run cp "$SCRIPT_DIR/scripts/forgeos-monitor" /usr/local/bin/forgeos-monitor
+  run chmod +x /usr/local/bin/forgeos-monitor
+  run cp "$SCRIPT_DIR/scripts/forgeos-sysinfo" /usr/local/bin/forgeos-sysinfo
+  run chmod +x /usr/local/bin/forgeos-sysinfo
   run chown -R "$USER_NAME:$USER_NAME" "$USER_HOME/.config" 2>/dev/null || true
   # tmux útil — printf en vez de heredoc dentro de bash -c (era frágil)
   if [[ ! -f "$USER_HOME/.tmux.conf" ]]; then
@@ -99,5 +103,5 @@ log "6/6 LightDM como gestor de inicio..."
 run systemctl enable lightdm 2>/dev/null || true
 
 log "Listo. Reinicia y elige i3 en LightDM."
-echo "Atajos: Mod(Alt)+Return terminal · Mod+T 4 terminales · Mod+D lanzador · Mod+i InfoForge"
+echo "Atajos: Mod(Alt)+Return terminal · Mod+T 4 terminales · Mod+M monitor (btop) · Mod+d lanzador · Mod+i InfoForge"
 echo "Si vienes de GNOME/KDE, esto es mucho más ligero: solo terminales en mosaico."

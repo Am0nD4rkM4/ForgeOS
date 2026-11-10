@@ -1,4 +1,4 @@
-# ForgeOS — paquetes del live (Debian 12)
+# ForgeOS — paquetes del live (Debian 13)
 xorg
 xinit
 lightdm
@@ -14,6 +14,7 @@ tmux
 neovim
 htop
 btop
+fastfetch
 curl
 wget
 git
@@ -30,7 +31,7 @@ flameshot
 firefox-esr
 thunar
 file-roller
-policykit-1-gnome
+lxqt-policykit
 nmap
 whois
 dnsutils

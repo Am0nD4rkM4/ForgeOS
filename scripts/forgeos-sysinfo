@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# ForgeOS — datos del sistema en una terminal (para el panel del monitor)
+# Muestra usuario, equipo, uptime, RAM, disco e IP, y se actualiza solo.
+# Uso: forgeos-sysinfo
+set -euo pipefail
+while true; do
+  clear 2>/dev/null || printf '\033[2J\033[H'
+  echo "== ForgeOS — $(whoami)@$(hostname) — $(date '+%Y-%m-%d %H:%M') =="
+  echo
+  if command -v fastfetch >/dev/null 2>&1; then
+    fastfetch --logo none 2>/dev/null || true
+  else
+    echo "SO: $(grep '^PRETTY_NAME=' /etc/os-release 2>/dev/null | cut -d= -f2- | tr -d '"')"
+    echo "Kernel: $(uname -r)"
+    echo "Uptime: $(uptime -p 2>/dev/null || uptime)"
+  fi
+  echo
+  echo "-- Disco / --"
+  df -h / | tail -1
+  echo "-- RAM --"
+  free -h | head -2
+  echo "-- Red --"
+  hostname -I 2>/dev/null || ip -brief addr 2>/dev/null || echo "sin IP"
+  echo
+  echo "Actualizado cada 5 s — Ctrl+C para salir"
+  sleep 5
+done

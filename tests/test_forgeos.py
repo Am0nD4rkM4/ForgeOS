@@ -11,6 +11,7 @@ REQUIRED = [
     "config/i3/config", "config/i3status/config",
     "config/alacritty/alacritty.toml", "config/rofi/config.rasi",
     "config/picom/picom.conf", "scripts/forgeos-quad",
+    "scripts/forgeos-monitor", "scripts/forgeos-sysinfo",
     "live-build/auto/config",
     "live-build/config/package-lists/forgeos.list.chroot",
 ]
@@ -33,11 +34,57 @@ def test_i3_tiene_atajos_clave():
 def test_scripts_bash_validos():
     for sh in ["install.sh", "build-iso.sh", "live-build/auto/config",
                "live-build/config/hooks/normal/0010-forgeos-infoforge.hook.chroot",
-               "scripts/forgeos-quad"]:
+               "scripts/forgeos-quad", "scripts/forgeos-monitor",
+               "scripts/forgeos-sysinfo"]:
         r = subprocess.run(["bash", "-n", str(ROOT / sh)], capture_output=True, text=True)
         assert r.returncode == 0, f"{sh}: {r.stderr}"
     # forgeos-quad ejecutable
     assert (ROOT / "scripts/forgeos-quad").stat().st_mode & 0o111 or True
+
+
+def test_version_debian13():
+    """v2.0 es Debian 13 Trixie: nada de bookworm/Debian 12 ni policykit-1-gnome."""
+    # En el README se permite mencionar los nombres viejos en el
+    # apartado de cambios de la v2.0; en el código no debe quedar nada.
+    for f in ["install.sh", "build-iso.sh",
+              "live-build/auto/config",
+              "live-build/config/package-lists/forgeos.list.chroot"]:
+        txt = (ROOT / f).read_text()
+        assert "bookworm" not in txt, f"{f}: quedó bookworm"
+        assert "policykit-1-gnome" not in txt, f"{f}: quedó policykit-1-gnome"
+        assert "Debian 12" not in txt, f"{f}: quedó Debian 12"
+    assert "trixie" in (ROOT / "live-build/auto/config").read_text()
+    assert "Debian 13" in (ROOT / "README.md").read_text()
+    assert "ForgeOS v2.0" in (ROOT / "README.md").read_text()
+
+
+def test_monitor_escritorio():
+    """El monitor: btop + datos del sistema, con atajo Mod+M y arranque."""
+    mon = (ROOT / "scripts/forgeos-monitor").read_text()
+    assert "btop" in mon and "tmux" in mon and "forgeos-sysinfo" in mon
+    assert "workspace number 1" in mon
+    sysinfo = (ROOT / "scripts/forgeos-sysinfo").read_text()
+    for needed in ["whoami", "fastfetch", "df -h", "free -h"]:
+        assert needed in sysinfo, f"sysinfo: falta {needed}"
+    cfg = (ROOT / "config/i3/config").read_text()
+    for needed in ["bindsym $mod+m", "forgeos-monitor",
+                   "lxqt-policykit-agent"]:
+        assert needed in cfg, f"i3: falta {needed}"
+    assert "policykit-1-gnome" not in cfg
+
+
+def test_quad_en_espacio_2():
+    """Las 4 terminales van al espacio 2 para no tapar el monitor (espacio 1)."""
+    assert "workspace number 2" in (ROOT / "scripts/forgeos-quad").read_text()
+
+
+def test_paquetes_monitor_debian13():
+    pkgs = (ROOT / "live-build/config/package-lists/forgeos.list.chroot").read_text()
+    for p in ["btop", "fastfetch", "lxqt-policykit"]:
+        assert p in pkgs, f"falta paquete {p}"
+    install = (ROOT / "install.sh").read_text()
+    for p in ["btop", "fastfetch", "lxqt-policykit"]:
+        assert p in install, f"install.sh: falta {p}"
 
 
 def test_paquetes_i3_presentes():

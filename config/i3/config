@@ -1,5 +1,6 @@
 # ForgeOS — i3 config
-# Debian 12 + i3. Mod = Alt (cámbialo a Mod4/Super si prefieres, ver abajo)
+# Debian 13 + i3. Mod = Alt (cámbialo a Mod4/Super si prefieres, ver abajo)
+# Espacios: 1 Monitor (btop + datos del sistema) · 2 Terminales · 3 Web · 4 InfoForge · 5 Archivos
 # Mod = $mod
 set $mod Mod1
 set $term alacritty
@@ -53,8 +54,12 @@ bar {
 bindsym $mod+Return exec $term
 bindsym $mod+Shift+Return exec $term -e tmux
 
-# 4 terminales en mosaico al instante (Super/Alt + T)
+# 4 terminales en mosaico al instante (Super/Alt + T), en el espacio 2
 bindsym $mod+t exec forgeos-quad
+
+# Escritorio monitor: btop + datos del sistema (usuario, RAM, disco, IP)
+bindsym $mod+m exec --no-startup-id forgeos-monitor
+bindsym $mod+Shift+m exec --no-startup-id $term -e btop
 
 # Cerrar ventana, recargar, salir
 bindsym $mod+Shift+q kill
@@ -148,6 +153,6 @@ bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 5%-
 exec --no-startup-id picom --config ~/.config/picom/picom.conf
 exec --no-startup-id nitrogen --restore 2>/dev/null || true
 exec --no-startup-id nm-applet 2>/dev/null || true
-exec --no-startup-id /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 2>/dev/null || true
-# Mensaje de bienvenida en la primera terminal
-exec --no-startup-id $term -e bash -c 'echo "ForgeOS — Debian 12 + i3 | Mod+Return terminal, Mod+T 4 terminales, Mod+d lanzador"; exec bash'
+exec --no-startup-id /usr/bin/lxqt-policykit-agent 2>/dev/null || true
+# Escritorio monitor al arrancar: espacio 1 con btop + datos del sistema
+exec --no-startup-id sleep 1 && forgeos-monitor

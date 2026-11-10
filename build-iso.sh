@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# ForgeOS — constructor de ISO con live-build (Debian 12)
-# Uso (en Debian 12, con sudo, ~4 GB libres y buena conexión):
+# ForgeOS — constructor de ISO con live-build (Debian 13)
+# Uso (en Debian 13, con sudo, ~4 GB libres y buena conexión):
 #   sudo bash build-iso.sh
 #   # La ISO queda en: live-build/live-image-amd64.hybrid.iso
 #
@@ -22,7 +22,8 @@ if $DRY_RUN; then
   echo "[dry-run] build-iso: comprobaría root, instalaría live-build/debootstrap,"
   echo "[dry-run] copiaría live-build/ + config/ a /tmp/forgeos-build y ejecutaría lb clean/config/build"
   for f in live-build/auto/config live-build/config/package-lists/forgeos.list.chroot \
-           config/i3/config config/alacritty/alacritty.toml scripts/forgeos-quad; do
+           config/i3/config config/alacritty/alacritty.toml scripts/forgeos-quad \
+           scripts/forgeos-monitor scripts/forgeos-sysinfo; do
     [[ -f "$f" ]] || { echo "Falta $f"; exit 1; }
     echo "[dry-run] OK $f"
   done
@@ -50,6 +51,10 @@ cp -a config/rofi /tmp/forgeos-build/config/includes.chroot/etc/skel/.config/
 cp -a config/picom /tmp/forgeos-build/config/includes.chroot/etc/skel/.config/
 cp scripts/forgeos-quad /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
 chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-quad
+cp scripts/forgeos-monitor /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
+chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-monitor
+cp scripts/forgeos-sysinfo /tmp/forgeos-build/config/includes.chroot/usr/local/bin/
+chmod +x /tmp/forgeos-build/config/includes.chroot/usr/local/bin/forgeos-sysinfo
 
 cd /tmp/forgeos-build
 lb clean

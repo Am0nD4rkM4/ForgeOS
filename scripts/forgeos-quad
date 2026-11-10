@@ -12,4 +12,4 @@ if ! command -v i3-msg >/dev/null 2>&1; then
   "$TERM_CMD" &
   exit 0
 fi
-i3-msg "workspace number 1; exec $TERM_CMD; split h; exec $TERM_CMD; focus parent; split v; exec $TERM_CMD; focus parent; split v; exec $TERM_CMD" >/dev/null
+i3-msg "workspace number 2; exec $TERM_CMD; split h; exec $TERM_CMD; focus parent; split v; exec $TERM_CMD; focus parent; split v; exec $TERM_CMD" >/dev/null
