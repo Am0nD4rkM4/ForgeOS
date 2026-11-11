@@ -1,39 +1,38 @@
-# ForgeOS v2.1 — Debian 13 + i3, estilo Arch
+# ForgeOS v2.2 — Debian 13 + i3, estilo Arch
 
-**ForgeOS 2.1 · Basada en Debian 13 Trixie · Escritorio i3 tiling con monitor fijo en la esquina · Con InfoForge**
+**ForgeOS 2.2 · Basada en Debian 13 Trixie · Escritorio i3 tiling con monitor a pantalla completa en el espacio 1 · Con InfoForge**
 
 ForgeOS es lo que pediste, Luis: una distro con el espíritu de Arch —mínima, solo terminales en mosaico, todo con teclado— pero basada en Debian, que es con el que estás familiarizado. Sin GNOME ni KDE.
 
 Y sí, esto **ya es un escritorio**: un escritorio no tiene que tener iconos ni ventanas flotantes. Un escritorio es el programa que te pone la barra, las ventanas y los atajos. Aquí ese programa es i3, y es un escritorio tiling: en vez de ventanas encima de otras, las pone en mosaico, sin superponerse.
 
-## Cómo se ve ahora (v2.1)
+## Cómo se ve ahora (v2.2)
 
-Al arrancar, el monitor está **fijo en la esquina superior derecha**, siempre visible, y tú trabajas en las terminales del resto de la pantalla.
+Al arrancar, el monitor está **a pantalla completa en el espacio 1**, como se veía en v2.0, y tú trabajas en las terminales del espacio 2.
 
 ```
-┌──────────────────────────────────┬───────────────────┐
-│ 1 2 3 4 ...  CPU  RAM  Disco     │ btop              │
-├──────────────────────────────────┤ CPU ██████░░      │
-│                                  │ RAM ████░░░░      │
-│   tus terminales de trabajo      │ procesos...       │
-│   $ ...                          ├───────────────────┤
-│                                  │ luis@forgeos      │
-│   Mod+T abre 4 en mosaico        │ uptime · RAM · /  │
-│   Mod+Return abre una más        │ IP 192.168.1.10   │
-└──────────────────────────────────┴───────────────────┘
+┌───────────────────────────────────────────────────────┐
+│ 1 2 3 4 ...  CPU  RAM  Disco                          │
+├───────────────────────────────────────────────────────┤
+│ btop                                                  │
+│ CPU ██████░░  RAM ████░░░░  procesos...                │
+│                                                       │
+├───────────────────────────────────────────────────────┤
+│ luis@forgeos · uptime · RAM · disco · IP 192.168.1.10 │
+└───────────────────────────────────────────────────────┘
 ```
 
-Arriba de esa ventanita está **btop**, el administrador de tareas: CPU por núcleo, RAM, disco, red y la lista de procesos, todo en vivo. Abajo, **forgeos-sysinfo**: tu nombre de usuario, el equipo, cuánto lleva encendido, RAM, disco e IP, actualizándose cada 5 segundos. Y la barra de arriba también sigue mostrando CPU, RAM y disco.
+Arriba está **btop**, el administrador de tareas: CPU por núcleo, RAM, disco, red y la lista de procesos, todo en vivo. Abajo, **forgeos-sysinfo**: tu nombre de usuario, el equipo, cuánto lleva encendido, RAM, disco e IP, actualizándose cada 5 segundos. Y la barra de arriba también sigue mostrando CPU, RAM y disco.
 
-La ventanita tapa un poco de lo que hay debajo, eso es lo normal de una ventana fija en la esquina. Si te estorba, `Mod+M` la esconde, y con `Mod+M` otra vez vuelve. Si la cierras sin querer, `Mod+Shift+M` la reabre.
+Para ver el monitor: `Alt+1` o `Alt+M`. Para trabajar: `Alt+2`, donde `Mod+T` abre 4 terminales en mosaico. Si cierras el monitor sin querer, `Mod+Shift+M` lo reabre en el espacio 1.
 
 Puedes abrir todas las terminales que quieras, no solo 4: cada `Mod+Return` abre una más y el mosaico se reparte solo.
 
 ## Dos pantallas (laptop + monitor externo)
 
-Si conectas una segunda pantalla antes de entrar a i3, no tienes que hacer nada: al arrancar, el monitor a pantalla completa va al **espacio 1 en la pantalla de la derecha**, y tú trabajas en la pantalla de la laptop (espacio 2). La ventanita de la esquina sigue ahí si la quieres, con `Mod+M`.
+Si conectas una segunda pantalla antes de entrar a i3, no tienes que hacer nada: al arrancar, el espacio 1 con el monitor a pantalla completa va a la **pantalla de la derecha**, y tú trabajas en la pantalla de la laptop (espacio 2).
 
-Con una sola pantalla, el espacio 1 queda libre y el monitor es solo la ventanita de la esquina.
+Con una sola pantalla, el espacio 1 es el monitor y el espacio 2 es donde trabajas.
 
 ## Dos formas de usarla
 
@@ -79,7 +78,7 @@ Tarda 20-60 minutos. Pruébala en VM antes de instalarla en hardware real. El in
 
 | Espacio | Para qué |
 |---|---|
-| `Mod+1` Monitor | Monitor a pantalla completa (solo si hay 2 pantallas) |
+| `Mod+1` Monitor | Monitor a pantalla completa (btop + datos del sistema) |
 | `Mod+2` Terminales | Aquí cae `Mod+T` con las 4 terminales |
 | `Mod+3` | Libre, por ejemplo el navegador |
 | `Mod+4` | Libre, por ejemplo InfoForge |
@@ -89,8 +88,8 @@ Tarda 20-60 minutos. Pruébala en VM antes de instalarla en hardware real. El in
 
 | Atajo | Qué hace |
 |---|---|
-| `Mod+M` | **Esconder / mostrar el monitor de la esquina** |
-| `Mod+Shift+M` | Reabrir el monitor si se cerró |
+| `Mod+M` | **Ir al monitor (espacio 1, a pantalla completa)** |
+| `Mod+Shift+M` | Reabrir el monitor en el espacio 1 si se cerró |
 | `Mod+Return` | Nueva terminal |
 | `Mod+Shift+Return` | Terminal con tmux |
 | `Mod+T` | **4 terminales en mosaico** (espacio 2) |
@@ -143,7 +142,7 @@ forgeos/
 │   └── picom/picom.conf
 ├── scripts/
 │   ├── forgeos-quad      # abre 4 terminales en mosaico (espacio 2)
-│   ├── forgeos-monitor   # monitor fijo en la esquina superior derecha
+│   ├── forgeos-monitor   # monitor a pantalla completa en el espacio 1
 │   ├── forgeos-pantallas # dos pantallas: espacio 1 a la pantalla derecha
 │   └── forgeos-sysinfo   # usuario, uptime, RAM, disco, IP
 └── tests/test_forgeos.py
@@ -155,6 +154,12 @@ forgeos/
 python3 tests/test_forgeos.py
 bash -n install.sh build-iso.sh live-build/auto/config
 ```
+
+## Cambios de la v2.2 respecto a la v2.1
+
+- El monitor **vuelve a ser el espacio 1 a pantalla completa**, como en v2.0. Se elimina la ventana flotante fija en la esquina superior derecha y el scratchpad: `Mod+M` ya no esconde/muestra la ventanita, ahora va al espacio 1 (`Alt+1` hace lo mismo), y `Mod+Shift+M` reabre el monitor en el espacio 1 si se cerró.
+- **Por qué se revierte la esquina:** btop exige una terminal de al menos 80 columnas x 24 filas, y la ventanita del 34% de ancho / 48% de alto quedaba en 42x9 en la laptop de Luis (`Terminal size too small: Width = 42 Height = 9, Needed: Width = 80 Height = 24`). Agrandarla con `i3-msg resize` a 55%/65% devolvió `success:true` pero btop siguió en 42x9. A pantalla completa btop se veía bien, así que se vuelve a ese diseño.
+- **Dos pantallas:** `forgeos-pantallas` ya no crea un segundo monitor. Hay un solo monitor, el principal del espacio 1, y con dos pantallas ese espacio 1 va a la pantalla de la derecha. La detección de salidas activas de `xrandr` se mantiene como estaba (solo cuentan las salidas con modo activo).
 
 ## Cambios de la v2.1 respecto a la v2.0
 

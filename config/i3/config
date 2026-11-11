@@ -1,7 +1,7 @@
 # ForgeOS — i3 config
 # Debian 13 + i3. Mod = Alt (cámbialo a Mod4/Super si prefieres, ver abajo)
-# Espacios: 1 Monitor (pantalla completa si hay 2 pantallas) · 2 Terminales · 3 Web · 4 InfoForge · 5 Archivos
-# El monitor también vive fijo en la esquina superior derecha (Mod+M lo muestra/esconde)
+# Espacios: 1 Monitor a pantalla completa · 2 Terminales · 3 Web · 4 InfoForge · 5 Archivos
+# El monitor vive en el espacio 1, a pantalla completa (Alt+1 o Alt+M para verlo)
 # Mod = $mod
 set $mod Mod1
 set $term alacritty
@@ -59,12 +59,11 @@ bindsym $mod+Shift+Return exec $term -e tmux
 bindsym $mod+t exec forgeos-quad
 
 # Escritorio monitor: btop + datos del sistema (usuario, RAM, disco, IP)
-# Ventana fija en la esquina superior derecha, visible en todos los espacios.
-# Mod+M la esconde y la muestra; Mod+Shift+M la reabre si se cerró.
+# Monitor a pantalla completa en el espacio 1, en mosaico normal.
+# Mod+M va al espacio 1; Mod+Shift+M lo reabre si se cerró.
 # Se identifica por su clase de ventana (instance), no por el título:
 # el título cambia cuando arranca btop y la regla por título fallaba.
-for_window [instance="ForgeOS-Monitor"] floating enable, sticky enable, border pixel 1, resize set width 34 ppt height 48 ppt, move position 66 ppt 0 ppt
-bindsym $mod+m scratchpad show
+bindsym $mod+m workspace number 1
 bindsym $mod+Shift+m exec --no-startup-id forgeos-monitor
 
 # Cerrar ventana, recargar, salir
@@ -160,7 +159,7 @@ exec --no-startup-id picom --config ~/.config/picom/picom.conf
 exec --no-startup-id nitrogen --restore 2>/dev/null || true
 exec --no-startup-id nm-applet 2>/dev/null || true
 exec --no-startup-id /usr/bin/lxqt-policykit-agent 2>/dev/null || true
-# Escritorio monitor al arrancar: esquina superior derecha, fijo y visible
+# Escritorio monitor al arrancar: espacio 1 a pantalla completa
 exec --no-startup-id sleep 1 && forgeos-monitor
 # Dos pantallas: si hay un monitor externo, el espacio 1 va a la derecha
 exec --no-startup-id sleep 2 && forgeos-pantallas

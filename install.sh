@@ -105,5 +105,5 @@ log "6/6 LightDM como gestor de inicio..."
 run systemctl enable lightdm 2>/dev/null || true
 
 log "Listo. Reinicia y elige i3 en LightDM."
-echo "Atajos: Mod(Alt)+Return terminal · Mod+T 4 terminales · Mod+M monitor en esquina (esconde/muestra) · Mod+d lanzador · Mod+i InfoForge"
+echo "Atajos: Mod(Alt)+Return terminal · Mod+T 4 terminales · Mod+M ir al monitor (espacio 1) · Mod+d lanzador · Mod+i InfoForge"
 echo "Si vienes de GNOME/KDE, esto es mucho más ligero: solo terminales en mosaico."

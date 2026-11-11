@@ -120,5 +120,5 @@ fi
 log "Listo."
 echo "Ahora: cierra sesión, en el login elige la sesión 'i3' y entra."
 echo "Primera vez: Mod = Alt, acepta generar la config."
-echo "Atajos: Alt+Return terminal · Alt+T 4 terminales · Alt+M monitor en esquina (esconde/muestra) · Alt+D lanzador · Alt+I InfoForge"
+echo "Atajos: Alt+Return terminal · Alt+T 4 terminales · Alt+M ir al monitor (espacio 1) · Alt+D lanzador · Alt+I InfoForge"
 echo "Para volver a Xfce/GNOME: cierra sesión y elige esa sesión en el login."

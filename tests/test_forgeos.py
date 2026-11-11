@@ -56,48 +56,63 @@ def test_version_debian13():
         assert "Debian 12" not in txt, f"{f}: quedó Debian 12"
     assert "trixie" in (ROOT / "live-build/auto/config").read_text()
     assert "Debian 13" in (ROOT / "README.md").read_text()
-    assert "ForgeOS v2.1" in (ROOT / "README.md").read_text()
+    assert "ForgeOS v2.2" in (ROOT / "README.md").read_text()
 
 
 def test_monitor_escritorio():
-    """El monitor: ventana fija en la esquina superior derecha (Mod+M la
-    esconde/muestra), con btop + datos del sistema.
+    """v2.2: el monitor vuelve a ser el espacio 1 a pantalla completa, en
+    mosaico normal, como en v2.0. Sin ventana flotante en la esquina ni
+    scratchpad: btop exige 80x24 y la ventanita del 34% quedaba en 42x9
+    en la laptop de Luis. Mod+M va al espacio 1, Mod+Shift+M lo reabre.
     Se identifica por clase de ventana (instance), no por título: el
     título cambia cuando arranca btop y la regla por título fallaba."""
     mon = (ROOT / "scripts/forgeos-monitor").read_text()
     assert "btop" in mon and "tmux" in mon and "forgeos-sysinfo" in mon
-    assert "move scratchpad" in mon and "scratchpad show" in mon
+    assert "workspace number 1" in mon
     assert "ForgeOS Monitor" in mon
     assert "--class ForgeOS-Monitor" in mon
     assert '"instance": "ForgeOS-Monitor"' in mon
     assert '[instance="ForgeOS-Monitor"]' in mon
+    assert "move scratchpad" not in mon and "scratchpad show" not in mon, \
+        "v2.2: forgeos-monitor no usa scratchpad"
     assert '[title="^ForgeOS Monitor$"]' not in mon
     sysinfo = (ROOT / "scripts/forgeos-sysinfo").read_text()
     for needed in ["whoami", "fastfetch", "df -h", "free -h"]:
         assert needed in sysinfo, f"sysinfo: falta {needed}"
     cfg = (ROOT / "config/i3/config").read_text()
-    for needed in ["for_window [instance=\"ForgeOS-Monitor\"]",
-                   "floating enable", "sticky enable",
-                   "resize set width 34 ppt height 48 ppt",
-                   "move position 66 ppt 0 ppt",
-                   "bindsym $mod+m scratchpad show",
+    for needed in ["bindsym $mod+m workspace number 1",
                    "bindsym $mod+Shift+m exec --no-startup-id forgeos-monitor",
                    "forgeos-pantallas",
                    "lxqt-policykit-agent"]:
         assert needed in cfg, f"i3: falta {needed}"
     assert "policykit-1-gnome" not in cfg
     assert 'for_window [title="^ForgeOS Monitor$"]' not in cfg
+    # Sin flotante en la esquina: ni regla for_window del monitor, ni
+    # sticky, ni el tamaño 34%/48% de v2.1, ni scratchpad.
+    assert 'for_window [instance="ForgeOS-Monitor"]' not in cfg
+    assert "sticky enable" not in cfg
+    assert "resize set width 34 ppt height 48 ppt" not in cfg
+    assert "scratchpad show" not in cfg and "move scratchpad" not in cfg, \
+        "v2.2: la config no usa scratchpad"
 
 
 def test_doble_pantalla():
-    """Con 2 pantallas, el espacio 1 con el monitor va a la de la derecha.
-    Solo cuentan las salidas con un modo ACTIVO (resolución + posición);
-    una salida 'connected' sin modo no es una segunda pantalla."""
+    """v2.2: con 2 pantallas, el espacio 1 con el monitor (el único que
+    hay) va a la de la derecha. forgeos-pantallas ya NO crea un segundo
+    monitor: solo mueve el espacio 1. Solo cuentan las salidas con un
+    modo ACTIVO (resolución + posición); una salida 'connected' sin modo
+    no es una segunda pantalla."""
     pant = (ROOT / "scripts/forgeos-pantallas").read_text()
-    for needed in ["xrandr", "connected", "forgeos-monitor-2",
+    for needed in ["xrandr", "connected",
                    "move workspace to output right", "workspace number 1",
-                   "[0-9]+x[0-9]+[+]", "--class ForgeOS-Monitor2"]:
+                   "workspace number 2", "[0-9]+x[0-9]+[+]"]:
         assert needed in pant, f"pantallas: falta {needed}"
+    assert "forgeos-monitor-2" not in pant, \
+        "v2.2: pantallas no crea un segundo monitor"
+    assert "ForgeOS-Monitor2" not in pant, \
+        "v2.2: pantallas no crea un segundo monitor"
+    assert "tmux new-session" not in pant, \
+        "v2.2: pantallas no crea sesión tmux"
     # La detección vieja (cualquier 'connected') ya no debe estar.
     assert """awk '$2 == "connected" {print $1}'""" not in pant
 
