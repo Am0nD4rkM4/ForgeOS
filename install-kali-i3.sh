@@ -28,6 +28,10 @@ for arg in "$@"; do
     # ;; significa "fin de esta rama". *: "cualquier otra cosa".
     --dry-run) DRY_RUN=true ;;
     --no-infoforge) NO_INFOFORGE=true ;;
+    --no-nitrogen) : ;;
+    # --no-nitrogen ya no hace falta: nitrogen es opcional desde el
+    # arreglo de Kali, se intenta aparte y si no está, se omite solo.
+    # ":" significa "no hacer nada". Se acepta para no dar error.
     *) echo "Opción desconocida: $arg"; exit 2 ;;
     # Si el argumento no es ninguno de los dos conocidos, avisa y sale
     # con código 2 (error).
@@ -73,15 +77,28 @@ log "2/4 Instalando i3 y ayudantes (sin tocar Xfce/GNOME ni el login)..."
 # Aquí solo se instala i3 y sus ayudantes, no Xorg ni LightDM: Kali ya
 # tiene su propio sistema gráfico y su login, y no se tocan.
 # i3 = escritorio en mosaico. i3status = barra de arriba. i3lock = bloquear.
-# dmenu/rofi = lanzadores. picom = transparencias. nitrogen = fondo.
+# dmenu/rofi = lanzadores. picom = transparencias.
 # alacritty = terminal. tmux = varias terminales en una. htop/btop = CPU y RAM.
 # fastfetch = datos del sistema. flameshot = capturas. fonts-* = las letras.
 # brightnessctl = brillo. pavucontrol = volumen.
+# nitrogen NO va en la lista principal: en Kali no tiene candidato para
+# instalar ("E: El paquete «nitrogen» no tiene un candidato para la
+# instalación") y, como apt instala todo en un solo comando, un paquete
+# que falta tumba toda la instalación aunque los demás sí existan.
+# nitrogen solo pone el fondo de pantalla; la config de i3 ya lo llama
+# con "|| true", así que si no está, i3 arranca igual, solo sin fondo.
 run apt-get install -y -qq \
-  i3 i3status i3lock dmenu rofi picom nitrogen \
+  i3 i3status i3lock dmenu rofi picom \
   alacritty tmux htop btop fastfetch flameshot \
   fonts-jetbrains-mono fonts-firacode x11-xserver-utils \
   brightnessctl pavucontrol
+# Intentar nitrogen aparte, sin tumbar nada si Kali no lo tiene.
+# "|| true" significa: "si esto falla, no es error, sigue adelante".
+if $DRY_RUN; then
+  echo "[dry-run] intentar instalar nitrogen (opcional, solo fondo de pantalla)"
+else
+  apt-get install -y -qq nitrogen 2>/dev/null || echo "Aviso: nitrogen no está disponible en Kali, se omite (solo es el fondo de pantalla)."
+fi
 
 log "3/4 Copiando la config de ForgeOS (con copia de seguridad si ya tenías i3)..."
 # SCRIPT_DIR es la carpeta donde está este script: dirname "$0" dice
